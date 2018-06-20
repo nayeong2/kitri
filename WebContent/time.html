@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+var httpRequest;
+//html에서 서버하고 통신할 수 있는 객체
+var view;
+
+function getXMLHttpRequest(){
+	if(window.ActiveXObject){ //IE
+		try{ //IE 11이하
+			return new ActiveXObject("Msxml2.XMLHTTP");
+		} catch(e1) {
+			try{
+				return new ActiveXObject("Microsoft.XMLHTTP");
+			} catch(e2) {
+				return null;
+			}
+		}
+	} else if(window.XMLHttpRequest) { //비IE
+		return new XMLHttpRequest();
+	} else {
+		return null;
+	}
+}
+
+function starttime(){
+	view= document.getElementById("viewtime");
+	
+	//document.getElementById("viewtime").innerHTML= new Date();
+	httpRequest= getXMLHttpRequest();
+	httpRequest.onreadystatechange= gettime; 
+	//callback함수 > () 쓰지 않는다
+	
+	httpRequest.open("POST", "time.jsp", true);
+	//true면 비동기, false면 동기 async였으니까
+	
+	httpRequest.send(null);
+	//서버에서 바뀌면 클라이언트도 바뀐 정보를 받는다
+}
+
+function gettime(){
+	/*
+	0. 객체만 생성(open 메소드가 호출되기 전)
+	1. open 메소드 호출 : 열려만 있음
+	2. send 메소드 호출 : 데이터를 주고받을 수 있음. 모든 데이터가 서버로 넘어가기 전 상태. 호출만 함
+	3. 데이터의 일부를 받은 상태
+	4. 데이터를 전부 받은 상태
+	*/
+	//alert(httpRequest.readyState);
+	
+	if(httpRequest.readyState== 4){ //처리완료
+		//status가 200일 때 정상적, 400 & 500 에러는 눈에 보이면 안된다
+		if(httpRequest.status== 200){
+			var txt= httpRequest.responseText;
+			view.innerHTML= txt;
+			setTimeout("starttime()", 1000);
+		} else {
+			alert("처리 중 오류가 발생했습니다");
+		}
+	} else { //처리중
+		view.innerHTML= '<img src= "./img/loading.gif" width= "100">';
+	}
+}
+
+window.onload= function(){
+	//window.setInterval("starttime()", 1000);
+	starttime();
+}
+</script>
+</head>
+<body>
+<div align= "center">
+	현재시간<br>
+	<div id= "viewtime"></div>
+</div>
+</body>
+</html>

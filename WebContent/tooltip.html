@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="/ajaxtest/js/httpRequest.js"></script>
+<script type="text/javascript">
+	var popup;
+	var bookData;
+	var bookDataBody;
+	var offsetElement;
+
+	function initVars() {
+		popup= document.getElementById("popup");
+		bookData= document.getElementById("bookData");
+		bookDataBody= document.getElementById("bookDataBody");
+	}
+
+	function showBookData(element) {
+		clearData();
+		offsetElement= element;
+		var isbn = element.id;
+		var params = "isbn=" + isbn;
+		sendRequest("/ajaxtest/tooltip", params, receiveBook, "GET");
+	}
+	
+	function clearData(){
+		var cnt= bookDataBody.childNodes.length; //배열 return
+		for (var i = cnt-1; i >=0; i--) {
+			bookDataBody.removeChild(bookDataBody.childNodes[i]);
+		}
+	}
+
+	function hideBookData() {
+		var view = document.getElementById("view");
+		if (httpRequest.readyState == 4) { //처리완료
+			//status가 200일 때 정상적, 400 & 500 에러는 눈에 보이면 안된다
+			if (httpRequest.status == 200) {
+				makeTooltip(httpRequest.responseXML);
+			} else {
+				alert("처리 중 오류가 발생했습니다");
+			}
+		}
+	}
+
+	function makeTooltip(bookData) {
+		setOffset();
+		
+		var title = bookData.getElementsByTagName("title")[0].firstChild.data;
+		//getElements임. title이 여러개 있을 수 있으니까
+		//이 예제에서는 하나를 뽑아내니까 [0]으로 첫번째를 지정함
+		//firstChild는 Element
+
+		var publisher = bookData.getElementsByTagName("publisher")[0].firstChild.data;
+		var price = bookData.getElementsByTagName("price")[0].firstChild.data;
+
+		var titleData = "제목 : " + title;
+		var publisherData = "출판사 : " + publisher;
+		var priceData = "가격 : " + price + "원";
+
+		var row1 = createRow(titleData);
+		var row2 = createRow(publisherData);
+		var row3 = createRow(priceData);
+		
+		bookDataBody.appendChild(row1);
+		bookDataBody.appendChild(row2);
+		bookDataBody.appendChild(row3);
+	}
+
+	function createRow(data) {
+		var row, cell, txtNode;
+		row = document.createElement("tr"); //<tr></tr>
+		cell = document.createElement("td");//<td></td>
+		cell.setAttribute("bgcolor", "#f9d0f3");
+		cell.setAttribute("border", "0");
+		txtNode = document.createTextNode(data); //"가격 : "+ price+ "원"
+
+		cell.appendChild(txtNode);
+		row.appendChild(cell);
+
+		return row;
+	}
+	
+	function setOffset(){
+		var end= offsetElement.offsetWidth+ 2;
+		var top= offsetElement.offsetTop+ offsetElement.offsetParent.offsetTop;
+		
+		popup.style.border= "black solid 1px";
+		popup.style.left= end+ "px";
+		popup.style.top= top+ "px";
+		popup.style.display= "";   
+	}
+
+	function receiveBook() {
+
+	}
+	
+	window.onload= function(){
+		initVars();
+	}
+</script>
+</head>
+<body>
+	<h3>Ajax를 이용한 Tooltip</h3>
+	<table>
+		<tbody>
+			<tr>
+				<td id="1" onmouseover="javascript:showBookData(this);"
+					onmouseout="javascript:hideBookData(this);"><img
+					src="/ajaxtest/img/1.jpg" width="120" height="160"></td>
+			</tr>
+			<tr>
+				<td id="2" onmouseover="javascript:showBookData(this);"
+					onmouseout="javascript:hideBookData(this);"><img
+					src="/ajaxtest/img/2.jpg" width="120" height="160"></td>
+			</tr>
+			<tr>
+				<td id="3" onmouseover="javascript:showBookData(this);"
+					onmouseout="javascript:hideBookData(this);"><img
+					src="/ajaxtest/img/3.jpg" width="120" height="160"></td>
+			</tr>
+			<tr>
+				<td id="4" onmouseover="javascript:showBookData(this);"
+					onmouseout="javascript:hideBookData(this);"><img
+					src="/ajaxtest/img/4.jpg" width="120" height="160"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div id="popup" style="position: absolute;">
+		<table id="bookData">
+			<tbody id="bookDataBody"></tbody>
+		</table>
+	</div>
+</body>
+</html>

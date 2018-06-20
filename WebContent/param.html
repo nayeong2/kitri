@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type= "text/javascript" src= "/ajaxtest/js/httpRequest.js"></script>
+<!-- src는 공백도 없이 가져가야함. 무조건 script 따로 만들어서 해야한다
+	  밑에서 src 가져가면 안에 있는 모든것이 무용지물 -->
+<script type= "text/javascript">
+function sendParam(){
+	var name= document.getElementById("name").value;
+	var param= "name="+ encodeURI(name);
+	//encodeURI > 특수문자 빼고 인코딩
+	//encodeURIComponent > 특수문자 포함해서 인코딩
+	//두가지 모두 utf-8로
+	
+	sendRequest("/ajaxtest/param", param, receiveResult, "GET");
+	//library, 우리가 사용할 것을 미리 만들어놓음
+	
+	document.getElementById("name").value= "";
+}
+
+function receiveResult(){
+	var view= document.getElementById("view");
+	if(httpRequest.readyState== 4){ //처리완료
+		//status가 200일 때 정상적, 400 & 500 에러는 눈에 보이면 안된다
+		if(httpRequest.status== 200){
+			var txt= httpRequest.responseText;
+			view.innerHTML= txt;
+		} else {
+			alert("처리 중 오류가 발생했습니다");
+		}
+	} else { //처리중
+		view.innerHTML= '<img src= "./img/loading.gif" width= "100">';
+	}
+}
+</script>
+</head>
+<body>
+<div align= "center">
+	<h3>Ajax를 이용한 parameter 전송</h3>
+	<input type= "text" name= "name" id= "name">
+	<input type= "button" value= "전송" onclick= "javascript:sendParam();">
+	<div id= "view"></div>
+</div>
+</body>
+</html>
