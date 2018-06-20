@@ -25,10 +25,15 @@
 	}
 	
 	function clearData(){
+		while(bookDataBody.firstChild){
+			bookDataBody.removeChild(bookDataBody.firstChild);
+		}
+		/* 
 		var cnt= bookDataBody.childNodes.length; //배열 return
 		for (var i = cnt-1; i >=0; i--) {
 			bookDataBody.removeChild(bookDataBody.childNodes[i]);
 		}
+		 */
 	}
 
 	function hideBookData() {
@@ -69,6 +74,8 @@
 
 	function createRow(data) {
 		var row, cell, txtNode;
+		
+		//document.createElement("tr").appendChild(document.createElement("td").setAttribute("bgcolor", "#f9d0f3").setAttribute("border", "0").appendChild(document.createTextNode(data)));
 		row = document.createElement("tr"); //<tr></tr>
 		cell = document.createElement("td");//<td></td>
 		cell.setAttribute("bgcolor", "#f9d0f3");
@@ -95,9 +102,12 @@
 
 	}
 	
-	window.onload= function(){
+	window.onload = initVars;
+	/* 
+	window.onload= function (){
 		initVars();
 	}
+	 */
 </script>
 </head>
 <body>
